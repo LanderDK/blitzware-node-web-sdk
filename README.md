@@ -1,4 +1,4 @@
-# BlitzWare Node.js SDK
+# BlitzWare Node.js SDK (Traditional Web App)
 
 A comprehensive OAuth 2.0 SDK for Node.js applications supporting both Express.js and Koa.js frameworks with middleware patterns.
 
