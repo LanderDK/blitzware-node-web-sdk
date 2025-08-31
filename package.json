@@ -1,0 +1,59 @@
+{
+  "name": "blitzware-node-sdk",
+  "version": "2.0.2",
+  "description": "BlitzWare OAuth 2.0 SDK for Node.js Traditional Web Applications",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "keywords": [
+    "oauth2",
+    "authentication",
+    "blitzware",
+    "nodejs",
+    "traditional-web-app",
+    "confidential-client"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "prepublishOnly": "npm run build",
+    "setup": "node test-setup.js",
+    "example:express": "node examples/express-example.js",
+    "example:koa": "node examples/koa-example.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.7"
+  },
+  "devDependencies": {
+    "@koa/router": "^14.0.0",
+    "@types/express": "^5.0.3",
+    "@types/express-session": "^1.17.7",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.3.0",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-session": "^1.17.3",
+    "jest": "^30.1.1",
+    "koa": "^3.0.1",
+    "koa-bodyparser": "^4.4.1",
+    "koa-session": "^7.0.2",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.5.4"
+  },
+  "peerDependencies": {
+    "express": "^4.18.0",
+    "express-session": "^1.17.0"
+  },
+  "files": [
+    "dist/"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LanderDK/blitzware-node-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LanderDK/blitzware-node-sdk/issues"
+  },
+  "homepage": "https://github.com/LanderDK/blitzware-node-sdk#readme"
+}
