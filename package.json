@@ -1,6 +1,6 @@
 {
-  "name": "blitzware-node-sdk",
-  "version": "2.0.2",
+  "name": "blitzware-node-web-sdk",
+  "version": "1.0.0",
   "description": "BlitzWare OAuth 2.0 SDK for Node.js Traditional Web Applications",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -50,10 +50,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/LanderDK/blitzware-node-sdk.git"
+    "url": "https://github.com/LanderDK/blitzware-node-web-sdk.git"
   },
   "bugs": {
-    "url": "https://github.com/LanderDK/blitzware-node-sdk/issues"
+    "url": "https://github.com/LanderDK/blitzware-node-web-sdk/issues"
   },
-  "homepage": "https://github.com/LanderDK/blitzware-node-sdk#readme"
+  "homepage": "https://github.com/LanderDK/blitzware-node-web-sdk#readme"
 }
