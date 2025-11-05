@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction, Router } from "express";
 import { BlitzWareAuth } from "./BlitzWareAuth";
-import { BlitzWareAuthError, BlitzWareAuthConfig, BlitzWareUser } from "./types";
+import {
+  BlitzWareAuthError,
+  BlitzWareAuthConfig,
+  BlitzWareUser,
+} from "./types";
 
 type Logger = {
   error?: (...args: any[]) => void;
@@ -92,17 +96,26 @@ export function expressAuth(config: AuthConfig) {
 
   // Helper: check if a request path is public
   function isPublicPath(pathname: string): boolean {
-    if (pathname === "/login" || pathname === "/callback" || pathname === "/logout") return true;
+    if (
+      pathname === "/login" ||
+      pathname === "/callback" ||
+      pathname === "/logout"
+    )
+      return true;
     return publicPaths.some((p) => {
       if (typeof p === "string") return p === pathname;
-      try { return p.test(pathname); } catch { return false; }
+      try {
+        return p.test(pathname);
+      } catch {
+        return false;
+      }
     });
   }
 
   // Middleware to attach user and enforce auth if required
   router.use((req: Request, res: Response, next: NextFunction) => {
     const session = req.session as any;
-    
+
     // Initialize req.blitzware
     req.blitzware = {
       user: session?.user || undefined,
@@ -111,7 +124,11 @@ export function expressAuth(config: AuthConfig) {
     };
 
     // If auth is required and user is not authenticated and not on public path
-    if (authRequired && !req.blitzware.isAuthenticated() && !isPublicPath(req.path)) {
+    if (
+      authRequired &&
+      !req.blitzware.isAuthenticated() &&
+      !isPublicPath(req.path)
+    ) {
       return res.redirect("/login");
     }
 
@@ -124,15 +141,18 @@ export function expressAuth(config: AuthConfig) {
       const session = req.session as any;
 
       if (!session) {
-        logger.error("Session not found. Make sure express-session middleware is configured.");
+        logger.error(
+          "Session not found. Make sure express-session middleware is configured."
+        );
         return res.status(500).send("Session configuration error");
       }
 
       const state = globalBlitzware!.generateState();
-      const { url: authUrl, codeVerifier } = globalBlitzware!.getAuthorizationUrl({
-        state,
-        additionalParams,
-      });
+      const { url: authUrl, codeVerifier } =
+        globalBlitzware!.getAuthorizationUrl({
+          state,
+          additionalParams,
+        });
 
       session.oauthState = state;
       session.codeVerifier = codeVerifier;
@@ -150,7 +170,9 @@ export function expressAuth(config: AuthConfig) {
       const session = req.session as any;
 
       if (!session) {
-        logger.error("Session not found. Make sure express-session middleware is configured.");
+        logger.error(
+          "Session not found. Make sure express-session middleware is configured."
+        );
         return res.status(500).send("Session configuration error");
       }
 
@@ -168,7 +190,9 @@ export function expressAuth(config: AuthConfig) {
         session.refreshToken = tokenResponse.refresh_token;
       }
 
-      const user = await globalBlitzware!.getUserInfo(tokenResponse.access_token);
+      const user = await globalBlitzware!.getUserInfo(
+        tokenResponse.access_token
+      );
       session.user = user;
 
       session.oauthState = null;
@@ -252,12 +276,25 @@ export function expressAuth(config: AuthConfig) {
 
 /**
  * requiresAuth middleware
- * Usage: router.get('/profile', requiresAuth(), (req, res) => { ... })
+ * Usage: router.get('/profile', expressRequiresAuth(), (req, res) => { ... })
  */
 export function expressRequiresAuth() {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.blitzware?.isAuthenticated()) {
       return res.redirect("/login");
+    }
+    next();
+  };
+}
+
+/**
+ * expressMakeRequireRole middleware
+ * Usage: router.get('/admin', expressRequiresAuth(), expressRequiresRole('admin'), (req, res) => { ... })
+ */
+export function expressRequiresRole(role: string) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.blitzware?.user?.roles?.includes(role)) {
+      return res.status(403).send("Forbidden");
     }
     next();
   };
@@ -319,10 +356,19 @@ export function koaAuth(config: AuthConfig) {
 
   // Helper: check if a request path is public
   function isPublicPath(pathname: string): boolean {
-    if (pathname === "/login" || pathname === "/callback" || pathname === "/logout") return true;
+    if (
+      pathname === "/login" ||
+      pathname === "/callback" ||
+      pathname === "/logout"
+    )
+      return true;
     return publicPaths.some((p) => {
       if (typeof p === "string") return p === pathname;
-      try { return p.test(pathname); } catch { return false; }
+      try {
+        return p.test(pathname);
+      } catch {
+        return false;
+      }
     });
   }
 
@@ -341,17 +387,20 @@ export function koaAuth(config: AuthConfig) {
     if (ctx.path === "/login" && ctx.method === "GET") {
       try {
         if (!session) {
-          logger.error("Session not found. Make sure koa-session middleware is configured.");
+          logger.error(
+            "Session not found. Make sure koa-session middleware is configured."
+          );
           ctx.status = 500;
           ctx.body = "Session configuration error";
           return;
         }
 
         const state = globalKoaBlitzware!.generateState();
-        const { url: authUrl, codeVerifier } = globalKoaBlitzware!.getAuthorizationUrl({
-          state,
-          additionalParams,
-        });
+        const { url: authUrl, codeVerifier } =
+          globalKoaBlitzware!.getAuthorizationUrl({
+            state,
+            additionalParams,
+          });
 
         session.oauthState = state;
         session.codeVerifier = codeVerifier;
@@ -369,7 +418,9 @@ export function koaAuth(config: AuthConfig) {
     if (ctx.path === "/callback" && ctx.method === "GET") {
       try {
         if (!session) {
-          logger.error("Session not found. Make sure koa-session middleware is configured.");
+          logger.error(
+            "Session not found. Make sure koa-session middleware is configured."
+          );
           ctx.status = 500;
           ctx.body = "Session configuration error";
           return;
@@ -389,7 +440,9 @@ export function koaAuth(config: AuthConfig) {
           session.refreshToken = tokenResponse.refresh_token;
         }
 
-        const user = await globalKoaBlitzware!.getUserInfo(tokenResponse.access_token);
+        const user = await globalKoaBlitzware!.getUserInfo(
+          tokenResponse.access_token
+        );
         session.user = user;
 
         session.oauthState = null;
@@ -464,7 +517,11 @@ export function koaAuth(config: AuthConfig) {
     }
 
     // If auth is required and user is not authenticated and not on public path
-    if (authRequired && !ctx.blitzware.isAuthenticated() && !isPublicPath(ctx.path)) {
+    if (
+      authRequired &&
+      !ctx.blitzware.isAuthenticated() &&
+      !isPublicPath(ctx.path)
+    ) {
       ctx.redirect("/login");
       return;
     }
@@ -484,6 +541,22 @@ export function koaRequiresAuth() {
       ctx.redirect("/login");
       return;
     }
+    await next();
+  };
+}
+
+/**
+ * koaRequiresRole middleware
+ * Usage: router.get('/admin', koaRequiresAuth(), koaRequiresRole('admin'), async (ctx) => { ... })
+ */
+export function koaRequiresRole(role: string) {
+  return async (ctx: KoaContext, next: KoaNext) => {
+    if (!ctx.blitzware?.user?.roles?.includes(role)) {
+      ctx.status = 403;
+      ctx.body = "Forbidden";
+      return;
+    }
+
     await next();
   };
 }
