@@ -267,7 +267,59 @@ When you use `expressAuth()` or `koaAuth()`, the following routes are created au
 
 ### Protection
 
-- `expressRequiresAuth()` and `koaRequiresAuth()` check for a user stored in the session. They do not perform token introspection by default.
+The SDK provides middleware to protect routes and enforce authorization:
+
+#### Authentication Middleware
+
+- `expressRequiresAuth()` / `koaRequiresAuth()` - Ensures a user is logged in before accessing a route. Redirects to `/login` if not authenticated.
+
+**Express Example:**
+```js
+app.get("/profile", expressRequiresAuth(), (req, res) => {
+  res.json({ user: req.session.user });
+});
+```
+
+**Koa Example:**
+```js
+router.get("/profile", koaRequiresAuth(), async (ctx) => {
+  ctx.body = { user: ctx.session.user };
+});
+```
+
+#### Role-Based Authorization Middleware
+
+- `expressRequiresRole(role)` / `koaRequiresRole(role)` - Ensures a user has a specific role. Returns 403 Forbidden if the user doesn't have the required role.
+
+**Express Example:**
+```js
+const { expressRequiresAuth, expressRequiresRole } = require("blitzware-node-sdk");
+
+// Admin-only route
+app.get("/admin", 
+  expressRequiresAuth(), 
+  expressRequiresRole("admin"), 
+  (req, res) => {
+    res.send("Admin Dashboard");
+  }
+);
+```
+
+**Koa Example:**
+```js
+const { koaRequiresAuth, koaRequiresRole } = require("blitzware-node-sdk");
+
+// Admin-only route
+router.get("/admin",
+  koaRequiresAuth(),
+  koaRequiresRole("admin"),
+  async (ctx) => {
+    ctx.body = "Admin Dashboard";
+  }
+);
+```
+
+**Note:** These middleware functions check for roles stored in `user.roles` array. They do not perform token introspection by default.
 
 ### Logout (front-channel)
 
