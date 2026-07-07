@@ -25,6 +25,8 @@ export interface BlitzWareAuthConfig {
   /** Redirect URI for OAuth 2.0 callback */
   redirectUri: string;
   /** Optional override for the BlitzWare Auth API base URL */
+  authBaseUrl?: string;
+  /** @deprecated Use authBaseUrl instead. */
   baseUrl?: string;
 }
 

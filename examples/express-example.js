@@ -15,7 +15,7 @@ const config = {
   redirectUri:
     process.env.BLITZWARE_REDIRECT_URI || `http://localhost:${port}/callback`,
   secret: process.env.SESSION_SECRET || "LONG_RANDOM_STRING",
-  // baseUrl: process.env.BLITZWARE_BASE_URL, // Optional: custom auth server
+  // authBaseUrl: process.env.BLITZWARE_AUTH_BASE_URL, // Optional managed auth domain
 };
 
 // Session middleware (required for auth middleware)

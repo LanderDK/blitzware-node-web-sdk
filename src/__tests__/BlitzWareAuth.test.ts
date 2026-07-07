@@ -14,6 +14,32 @@ describe("BlitzWareAuth", () => {
       expect(auth).toBeInstanceOf(BlitzWareAuth);
     });
 
+    it("should keep the default auth base URL when authBaseUrl is omitted", () => {
+      const auth = new BlitzWareAuth(validConfig);
+      expect(auth.getBaseUrl()).toBe("https://auth.blitzware.xyz/api/auth/");
+    });
+
+    it("should use custom authBaseUrl and normalize trailing slash", () => {
+      const auth = new BlitzWareAuth({
+        ...validConfig,
+        authBaseUrl: "https://acme.auth.blitzware.xyz/api/auth",
+      });
+
+      expect(auth.getBaseUrl()).toBe("https://acme.auth.blitzware.xyz/api/auth/");
+      expect(auth.getAuthorizationUrl().url).toContain(
+        "https://acme.auth.blitzware.xyz/api/auth/authorize"
+      );
+    });
+
+    it("should keep legacy baseUrl as a compatibility alias", () => {
+      const auth = new BlitzWareAuth({
+        ...validConfig,
+        baseUrl: "https://legacy.auth.blitzware.xyz/api/auth",
+      });
+
+      expect(auth.getBaseUrl()).toBe("https://legacy.auth.blitzware.xyz/api/auth/");
+    });
+
     it("should throw error when clientId is missing", () => {
       expect(() => {
         new BlitzWareAuth({

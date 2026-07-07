@@ -11,8 +11,26 @@ import {
   AuthorizationCallbackParams,
 } from "./types";
 
-const DEFAULT_BASE_URL = "https://auth.blitzware.xyz/api/auth";
+const DEFAULT_AUTH_BASE_URL = "https://auth.blitzware.xyz/api/auth/";
 const DEFAULT_TIMEOUT = 30000;
+
+function normalizeAuthBaseUrl(authBaseUrl?: string): string {
+  const value = authBaseUrl || DEFAULT_AUTH_BASE_URL;
+
+  try {
+    const url = new URL(value);
+    url.pathname = url.pathname.replace(/\/+$/, "") + "/";
+    url.search = "";
+    url.hash = "";
+    return url.toString();
+  } catch {
+    throw new BlitzWareAuthError("Invalid authBaseUrl", "invalid_auth_base_url");
+  }
+}
+
+function buildAuthUrl(authBaseUrl: string, path: string): string {
+  return `${authBaseUrl}${path.replace(/^\/+/, "")}`;
+}
 
 /**
  * BlitzWare Node.js SDK for Traditional Web Applications
@@ -24,7 +42,7 @@ const DEFAULT_TIMEOUT = 30000;
 export class BlitzWareAuth {
   private readonly config: BlitzWareAuthConfig;
   private readonly httpClient: AxiosInstance;
-  private readonly baseUrl: string = DEFAULT_BASE_URL;
+  private readonly baseUrl: string = DEFAULT_AUTH_BASE_URL;
   private readonly timeout: number = DEFAULT_TIMEOUT;
 
   constructor(config: BlitzWareAuthConfig) {
@@ -50,10 +68,7 @@ export class BlitzWareAuth {
 
     this.config = config;
 
-    // Allow overriding the base API URL if provided
-    if ((config as any).baseUrl) {
-      this.baseUrl = (config as any).baseUrl as string;
-    }
+    this.baseUrl = normalizeAuthBaseUrl(config.authBaseUrl || config.baseUrl);
 
     // Configure HTTP client
     this.httpClient = axios.create({
@@ -118,7 +133,7 @@ export class BlitzWareAuth {
   } {
     const { responseType = "code", state, additionalParams = {} } = params;
 
-  const url = new URL(`${this.baseUrl}/authorize`);
+    const url = new URL(buildAuthUrl(this.baseUrl, "authorize"));
 
     // Required parameters
     url.searchParams.set("response_type", responseType);

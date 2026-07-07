@@ -42,7 +42,8 @@ BLITZWARE_CLIENT_SECRET=your-client-secret
 BLITZWARE_REDIRECT_URI=http://localhost:3000/callback
 SESSION_SECRET=replace-with-a-strong-secret
 # Optional: override auth base (self-hosted/staging)
-# BLITZWARE_BASE_URL=https://auth.blitzware.xyz/api/auth
+# Optional managed auth domain shown in the BlitzWare dashboard
+# BLITZWARE_AUTH_BASE_URL=https://acme.auth.blitzware.xyz/api/auth/
 ```
 
 ## 4) Express setup
@@ -67,7 +68,7 @@ const config = {
   redirectUri:
     process.env.BLITZWARE_REDIRECT_URI || `http://localhost:${port}/callback`,
   secret: process.env.SESSION_SECRET || "LONG_RANDOM_STRING",
-  // baseUrl: process.env.BLITZWARE_BASE_URL, // Optional: custom auth server
+  // authBaseUrl: process.env.BLITZWARE_AUTH_BASE_URL, // Optional managed auth domain
 };
 
 // Session middleware (required for auth middleware)
@@ -177,7 +178,7 @@ const config = {
   redirectUri:
     process.env.BLITZWARE_REDIRECT_URI || `http://localhost:${port}/callback`,
   secret: process.env.SESSION_SECRET || "LONG_RANDOM_STRING",
-  // baseUrl: process.env.BLITZWARE_BASE_URL, // Optional: custom auth server
+  // authBaseUrl: process.env.BLITZWARE_AUTH_BASE_URL, // Optional managed auth domain
 };
 
 // Koa requires signing keys for sessions
@@ -328,6 +329,14 @@ The SDK performs a front-channel logout: it serves a small HTML page that POSTs 
 ---
 
 If you need additional features — token introspection on each request, automatic refresh using `session.refreshToken`, or other behavior — open an issue or PR and I can add an opt-in option such as `requiresAuth({ validateToken: true })`.
+
+---
+
+### Managed auth domains
+
+`authBaseUrl` is optional. Omit it to keep using `https://auth.blitzware.xyz/api/auth/`; set it to the managed auth domain shown in the BlitzWare dashboard, such as `https://acme.auth.blitzware.xyz/api/auth/`.
+
+If Google, Microsoft, Discord, or another social provider is enabled, add the managed-domain callback URL in that provider's settings before switching users to the managed domain. This option does not require JWKS, ID tokens, or OIDC discovery configuration.
 
 ---
 
