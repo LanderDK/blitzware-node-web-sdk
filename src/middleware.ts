@@ -34,6 +34,7 @@ declare global {
       blitzware?: {
         user?: BlitzWareUser;
         accessToken?: string;
+        idToken?: string;
         isAuthenticated(): boolean;
       };
     }
@@ -120,6 +121,7 @@ export function expressAuth(config: AuthConfig) {
     req.blitzware = {
       user: session?.user || undefined,
       accessToken: session?.accessToken || undefined,
+      idToken: session?.idToken || undefined,
       isAuthenticated: () => !!session?.user,
     };
 
@@ -189,6 +191,9 @@ export function expressAuth(config: AuthConfig) {
       if (tokenResponse.refresh_token) {
         session.refreshToken = tokenResponse.refresh_token;
       }
+      if (tokenResponse.id_token) {
+        session.idToken = tokenResponse.id_token;
+      }
 
       const user = await globalBlitzware!.getUserInfo(
         tokenResponse.access_token
@@ -225,6 +230,7 @@ export function expressAuth(config: AuthConfig) {
         if (session) {
           session.accessToken = null;
           session.refreshToken = null;
+          session.idToken = null;
           session.user = null;
         }
 
@@ -317,6 +323,7 @@ interface KoaContext {
   blitzware?: {
     user?: BlitzWareUser;
     accessToken?: string;
+    idToken?: string;
     isAuthenticated(): boolean;
   };
 }
@@ -380,6 +387,7 @@ export function koaAuth(config: AuthConfig) {
     ctx.blitzware = {
       user: session?.user || undefined,
       accessToken: session?.accessToken || undefined,
+      idToken: session?.idToken || undefined,
       isAuthenticated: () => !!session?.user,
     };
 
@@ -439,6 +447,9 @@ export function koaAuth(config: AuthConfig) {
         if (tokenResponse.refresh_token) {
           session.refreshToken = tokenResponse.refresh_token;
         }
+        if (tokenResponse.id_token) {
+          session.idToken = tokenResponse.id_token;
+        }
 
         const user = await globalKoaBlitzware!.getUserInfo(
           tokenResponse.access_token
@@ -463,6 +474,7 @@ export function koaAuth(config: AuthConfig) {
         if (session) {
           session.accessToken = null;
           session.refreshToken = null;
+          session.idToken = null;
           session.user = null;
         }
 

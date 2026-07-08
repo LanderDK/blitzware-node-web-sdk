@@ -6,6 +6,7 @@ declare global {
       blitzware?: {
         user?: BlitzWareUser;
         accessToken?: string;
+        idToken?: string;
         isAuthenticated(): boolean;
       };
     }

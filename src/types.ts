@@ -58,6 +58,8 @@ export interface TokenResponse {
   expires_in?: number;
   /** Refresh token for obtaining new access tokens */
   refresh_token?: string;
+  /** OpenID Connect ID token, returned only when openid scope was requested */
+  id_token?: string;
   /** Scope of the access token */
   scope?: string;
 }
